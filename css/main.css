@@ -5,10 +5,7 @@ html, body {
 #app {
     display: flex;
     min-height: 100%;
-<<<<<<< HEAD
     min-width: 100%;
-=======
->>>>>>> 9ceaca582cf71af63c4e5da06cd50e758ce2699c
     flex-direction: column;
 }
 
