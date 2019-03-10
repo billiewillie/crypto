@@ -1,14 +1,12 @@
 export default class TradeWidget {
   constructor ({ element }) {
     this._el = element;
-
     this._total = 0;
 
     this._el.addEventListener('input', e => {
       if(!e.target.closest('#amount')) return;
       const value= e.target.value;
       this._total = this._currentItem.price * Number(value);
-
       this._updateDisplay(this._total);
     })
   } 
