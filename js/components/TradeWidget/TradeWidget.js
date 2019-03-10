@@ -4,16 +4,29 @@ export default class TradeWidget {
 
     this._total = 0;
 
-    this._render({});
+    this._el.addEventListener('input', e => {
+      if(!e.target.closest('#amount')) return;
+      const value= e.target.value;
+      this._total = this._currentItem.price * Number(value);
+
+      this._updateDisplay(this._total);
+    })
   } 
 
-  // close() {
-  //   this._el.querySelector('.modal').classList.remove('open');
-  // }
+  close() {
+    this._el.querySelector('.modal').classList.remove('open');
+  }
 
-  trade() {
+  trade(item) {
     this._currentItem = item;
     this._total = 0;
+
+    this._render(item);
+  }
+
+  _updateDisplay(value) {
+    this._totalEl = this._totalEl || this._el.querySelector('#item-total'); 
+    this._totalEl.textContent = value;
   }
 
   _render(item) {
