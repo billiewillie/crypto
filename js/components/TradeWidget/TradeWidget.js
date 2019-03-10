@@ -1,7 +1,12 @@
 export default class TradeWidget {
   constructor ({ element }) {
     this._el = element;
-    this._total = 0;
+
+    this._el.addEventListener('click', e => {
+      if(e.target.closest('#btn-cancel')) {
+        this.close();
+      }
+    })
 
     this._el.addEventListener('input', e => {
       if(!e.target.closest('#amount')) return;
