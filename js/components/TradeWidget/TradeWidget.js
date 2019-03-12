@@ -1,16 +1,43 @@
-export default class TradeWidget {
-  constructor ({ element }) {
-    this._el = element;
+import Component from '../Component/Component.js';
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+export default class TradeWidget extends Component {
+  constructor ({ element }) {
+    super({ element });
     this._el.addEventListener('click', e => {
       if(e.target.closest('#btn-cancel')) {
         this.close();
+      }
+
+      if(e.target.closest('#btn-buy')) {
+        let buyEvent = new CustomEvent('buy', {
+          detail: {
+            item: this._currentItem,
+            amount: +this._el.querySelector('#amount').value,
+          }
+        });
+        this._el.dispatchEvent(buyEvent);
+        this.close();
+      }
+    });
+
+    this._el.addEventListener('keydown', e => {
+      if(!e.target.closest('#amount')) return;
+
+      const { key } = e;
+
+      if(!isNumeric(key) && key !== 'Backspace') {
+        e.preventDefault();
       }
     })
 
     this._el.addEventListener('input', e => {
       if(!e.target.closest('#amount')) return;
-      const value= e.target.value;
+      
+      const value = e.target.value;
       this._total = this._currentItem.price * Number(value);
       this._updateDisplay(this._total);
     })
@@ -28,7 +55,7 @@ export default class TradeWidget {
   }
 
   _updateDisplay(value) {
-    this._totalEl = this._totalEl || this._el.querySelector('#item-total'); 
+    this._totalEl = this._el.querySelector('#item-total'); 
     this._totalEl.textContent = value;
   }
 

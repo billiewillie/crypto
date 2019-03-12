@@ -19,10 +19,11 @@ export default class App {
     this._table = new Table({
       data,
       element: this._el.querySelector('[data-element="table"]'),
-      onRowClick: (id) => {
-        this._tradeItem(id);
-      },
-    })
+    });
+
+    this._table.on('rowClick', e => {
+      this._tradeItem(e.detail);
+    });
   }
 
   _initPortfolio() {
@@ -35,6 +36,11 @@ export default class App {
   _initTradeWidget() {
     this._tradeWidget = new TradeWidget({
       element: this._el.querySelector('[data-element="trade-widget"]'),
+    });
+
+    this._tradeWidget.on('buy', e => {
+      const { item, amount } = e.detail;
+      this._portfolio.addItem(item, amount);
     });
   }
 
