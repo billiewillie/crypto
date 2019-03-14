@@ -32,6 +32,7 @@ export default class Portfolio {
 
   _render(data) {
     const items = Object.values(this._items);
+
     this._el.innerHTML = `
       <div class="card-panel hoverable center-align">
         <p>
@@ -40,7 +41,7 @@ export default class Portfolio {
           Portfolio Worth: ${this._portfolioWorth}
         </p>
         ${
-          items.lenght === 0 ? '': `
+          items.length === 0 ? '': `
             <table class="data-table highlight"> 
               <thead>
                 <tr>
