@@ -41,8 +41,10 @@ export default class Portfolio {
           Portfolio Worth: ${this._portfolioWorth}
         </p>
         ${
-          items.length === 0 ? '': `
-            <table class="data-table highlight"> 
+          items.length === 0 
+            ? ''
+            : `
+            <table class="highlight striped"> 
               <thead>
                 <tr>
                   <th>Name</th>
@@ -62,8 +64,7 @@ export default class Portfolio {
                   </tr>`).join('')
                 }
               </tbody>
-            </table>
-          `
+            </table>`
         }
       </div>
     `

@@ -7,7 +7,6 @@ export default class App {
   constructor ({ element }) {
     this._el = element;
     this._userBalance = 10000;
-
     this._render();
     
     DataService.getCurrencies((data) => {
