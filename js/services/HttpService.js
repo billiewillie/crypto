@@ -1,5 +1,5 @@
 export default {
-  _sendRequest(url, successCallback, method = 'GET') {
+  sendRequest(url, successCallback, method = 'GET') {
 
     // 1. Создаём новый объект XMLHttpRequest
     var xhr = new XMLHttpRequest();
@@ -24,12 +24,12 @@ export default {
 
   },
 
-  _sendMultipleRequests(urls, callback) {
+  sendMultipleRequests(urls, callback) {
     let pendingRequestCount = urls.length;
     let results = [];
 
     urls.forEach(url => {
-      this._sendRequest(url, data => {
+      this.sendRequest(url, data => {
         results.push({url, data});
         pendingRequestCount--;
 
