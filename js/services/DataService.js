@@ -1,25 +1,33 @@
-import HttpService from './HttpService.js'
+import HttpService from './HttpService.js';
 
 const COINS_URL = 'https://api.coinpaprika.com/v1/coins';
 const getSingleCoinUrl = (id) => `https://api.coinpaprika.com/v1/coins/${id}/ohlcv/latest/`;
 
 const DataService = {
-
   _sendRequest(url){
     let promise = {
+      _result: null,
+      _status: 'pending',
       _successCallbacks: [],
-      _resolve() {
-        this._successCallbacks.forEach(callback => callback()); 
+      _resolve(data) {
+        this._status = 'fulfilled';
+        this._result = data;
+        this._successCallbacks.forEach(callback => callback(data)); 
       },
       then(successCallback) {
-        this._successCallback.push(successCallback);
+        if(this._status === 'fulfilled') {
+          successCallback(this._result);
+        } else {
+          this._successCallbacks.push(successCallback);
+        }
+        
       }
     }
 
     HttpService.sendRequest(url, data => {
       promise._resolve(data);
     });
-    
+
     return promise;
   },
 
@@ -29,6 +37,12 @@ const DataService = {
 
     promise.then(result => {
       console.log(result);
+    })
+
+    setTimeout(() => {
+      promise.then(result => {
+        console.log('cb2', result);
+      }, 1000)
     })
 
     // const allCoinsPrices = allCoinsData
