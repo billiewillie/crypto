@@ -4,108 +4,65 @@ const COINS_URL = 'https://api.coinpaprika.com/v1/coins';
 const getSingleCoinUrl = (id) => `https://api.coinpaprika.com/v1/coins/${id}/ohlcv/latest/`;
 
 const DataService = {
-  _sendRequest(url){
-    let promise = {
-      _result: null,
-      _status: 'pending',
-      _successCallbacks: [],
-      _resolve(data) {
-        this._status = 'fulfilled';
-        this._result = data;
-        this._successCallbacks.forEach(callback => callback(data)); 
-      },
-      then(successCallback) {
-        if(this._status === 'fulfilled') {
-          successCallback(this._result);
-        } else {
-          this._successCallbacks.push(successCallback);
-        }
-        
-      }
+  async getCurrencies() {
+    try {
+      let data = await HttpService.sendRequest(COINS_URL);
+      data = data.slice(0, 10);
+      const coinsUrls = data.map(coin => getSingleCoinUrl(coin.id));
+
+      const coinsPrices = await HttpService.sendMultipleRequests(coinsUrls);
+      const dataWithPrice = data.map((item, index) => {
+        item.price = coinsPrices[index][0].close;
+        return item;
+      });
+
+      return dataWithPrice;
+    } catch(e) {
+      console.log(e)
     }
+  }
+}
 
-    HttpService.sendRequest(url, data => {
-      promise._resolve(data);
-    });
+class MyPromise {
+  constructor(behaviourFunction) {
+    this._result = null
+    this._status = 'pending'
+    this._successCallbacks = []
+    this._errorCallbacks = []
 
-    return promise;
-  },
+    behaviourFunction(this._resolve.bind(this), this._reject.bind(this));
+  }
 
-  getCurrencies(callback) {
+  _resolve(data) {
+    this._status = 'fulfilled';
+    this._result = data;
+    this._successCallbacks.forEach(callback => callback(data));
+  }
 
-    let promise = this._sendRequest(COINS_URL);
+  _reject(error) {
+    this._status = 'rejected';
+    this._result = error;
+    this._errorCallbacks.forEach(callback => callback(error));
+  }
 
-    promise.then(result => {
-      console.log(result);
-    })
+  then(successCallback, errorCallback) {
+    if (this._status === 'fulfilled') { 
+      successCallback(this._result);
+    } else if (this._status === 'rejected') { 
+      errorCallback(this._result);
+    } else {
+      this._successCallbacks.push(successCallback);
+      this._errorCallbacks.push(errorCallback);
+    }
+  }
 
-    setTimeout(() => {
-      promise.then(result => {
-        console.log('cb2', result);
-      }, 1000)
-    })
-
-    // const allCoinsPrices = allCoinsData
-    //   .then(data => {
-    //     data = data.slice(0, 10);
-    //     const coinsIds = data.map(coin => coin.id);
-    //     const coinsIdMap = coinsIds.reduce((acc, id) => {
-    //         acc[getSingleCoinUrl(id)] = id;
-    //         return acc;
-    //       }, {});
-
-    //     return HttpService._sendMultipleRequests(Object.keys(coinsIdMap));
-    //   })
-      
-    //   .then(coins => {
-    //     const dataWithPrice = data.map(item => {
-    //       let itemUrl = getSingleCoinUrl(item.id);
-    //       let itemPriceData = coins.find(coin => coin.url === itemUrl).data[0];
-    //       item.price = itemPriceData.close;
-    //       return item;
-    //     });
-    //     callback(dataWithPrice)
-    //   })
-
-    //   .catch(err => {});
-
-    // HttpService._sendRequest(COINS_URL, data => {
-    //   data = data.slice(0, 10);
-    //   const coinsIds = data.map(coin => coin.id);
-    //   const coinsIdMap = coinsIds.reduce((acc, id) => {
-    //     acc[getSingleCoinUrl(id)] = id;
-    //     return acc;
-    //   }, {})
-
-    //   HttpService._sendMultipleRequests(Object.keys(coinsIdMap), coins => {
-    //     const dataWithPrice = data.map(item => {
-    //       let itemUrl = getSingleCoinUrl(item.id);
-    //       let itemPriceData = coins.find(coin => coin.url === itemUrl).data[0];
-    //       item.price = itemPriceData.close;
-    //       return item;
-    //     });
-    //     callback(dataWithPrice)
-    //   });
-    // });
-  },
-
-  // getCurrenciesPrices(data, callback) {
-  //   const coinsIds = data.map(coin => coin.id);
-  //   const coinsIdMap = coinsIds.reduce((acc, id) => {
-  //     acc[getSingleCoinUrl(id)] = id;
-  //     return acc;
-  //   }, {})
-
-  //   HttpService._sendMultipleRequests(Object.keys(coinsIdMap), coins => {
-  //     const dataWithPrice = data.map(item => {
-  //       let itemUrl = getSingleCoinUrl(item.id);
-  //       let itemPriceData = coins.find(coin => coin.url === itemUrl).data[0];
-  //       item.price = itemPriceData.close;
-  //       return item;
-  //     });
-  //     callback(dataWithPrice)
-  //   });
-  // },
+  catch(errorCallback) {
+    if (this._status === 'rejected') { 
+      errorCallback(this._result);
+    } else {
+      this._errorCallbacks.push(errorCallback);
+    }
+  }
 };
 
 export default DataService;
