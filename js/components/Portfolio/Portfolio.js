@@ -1,10 +1,11 @@
 export default class Portfolio {
-  constructor ({ element, balance }) {
+  constructor({ element, balance }) {
     this._el = element;
     this._balance = balance;
     this._items = {};
 
     this._portfolioWorth = 0;
+
     this._render();
   }
 
@@ -20,7 +21,7 @@ export default class Portfolio {
     currentItem.total = currentItem.price * currentItem.amount;
 
     this._items[item.id] = currentItem;
-    const purchasePrice = item.Price * amount;
+    const purchasePrice = item.price * amount;
     this._balance = this._balance - purchasePrice;
 
     this._portfolioWorth = Object.values(this._items).reduce((total, item) => {
@@ -35,37 +36,38 @@ export default class Portfolio {
 
     this._el.innerHTML = `
       <div class="card-panel hoverable center-align">
-        <p>
-          Current balance: ${this._balance}
-          <br />
-          Portfolio Worth: ${this._portfolioWorth}
-        </p>
-        ${
-          items.length === 0 
-            ? ''
-            : `
-            <table class="highlight striped"> 
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Symbol</th>
-                  <th>Rank</th>
-                  <th>Price</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                ${items.map(item => `
-                  <tr data-id="${item.id}">
-                    <td>${item.name}</td>
-                    <td>${item.amount}</td>
-                    <td>${item.price}</td>
-                    <td>${item.total}</td>
-                  </tr>`).join('')
-                }
-              </tbody>
-            </table>`
-        }
+          <p>
+              Current balance: ${this._balance}
+              <br />
+              Portfolio Worth: ${this._portfolioWorth}
+          </p>
+          ${
+            items.length === 0
+              ? ''
+              : `
+              <table class="highlight striped"> 
+                <thead>
+                  <tr>
+                      <th>Name</th>
+                      <th>Amount</th>
+                      <th>Price</th>
+                      <th>Total</th>
+                  </tr>
+                </thead>
+        
+                <tbody>
+                    ${items.map(item => `
+                      <tr data-id="${item.id}">
+                          <td>${item.name}</td>
+                          <td>${item.amount}</td>
+                          <td>${item.price}</td>
+                          <td>${item.total}</td>
+                      </tr>
+                    `).join('')
+                  }
+                  </tbody>
+                </table>`
+          }
       </div>
     `
   }
